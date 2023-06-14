@@ -1,0 +1,169 @@
+{% extends "dashboards/dashboard.html" %}
+{% load static %}
+{% load dashboards %}
+{% load code %}
+{% load i18n %}
+
+{% block dashboards_style %}
+    {{ block.super }}
+    <style>
+        .code-wrapper {
+            position: relative;
+            margin-top: 1em;
+        }
+
+        .highlight {
+            padding: 1em;
+        }
+
+        .button-wrapper {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+        }
+
+        .copy-code-button {
+            position: sticky;
+            top: 0;
+            margin: 0.5em;
+            font-size: 2em;
+        }
+
+        #show-code-button {
+            position: fixed;
+            right: 0.5em;
+            bottom: 0.5em;
+            font-size: 2em;
+        }
+
+        #code-modal {
+            display: block;
+            position: fixed;
+            right: 0;
+            border: 0;
+            margin: 0 0 0 auto;
+            height: 100vh;
+            max-height: 100vh;
+            top: 0;
+            transform: translateX(100%);
+            transition: transform 0.5s;
+            z-index: 1;
+        }
+
+        #code-modal[open] {
+            transform: translateX(0);
+        }
+
+        @keyframes blur-backdrop {
+            0% {
+                backdrop-filter: blur(0);
+            }
+            100% {
+                backdrop-filter: blur(5px);
+            }
+        }
+
+        #code-modal[open]::backdrop {
+            animation: blur-backdrop 0.5s;
+            backdrop-filter: blur(5px);
+        }
+
+        #close-code-button {
+          font-size: 2em;
+          font-weight: bold;
+          background: none;
+          border: 0;
+        }
+
+        #component-dashboardshremployeesdashboardcomponentgender-inner .gauge .dial {
+          opacity: 1;
+        }
+
+        #component-dashboardshremployeesdashboardcomponentgender-inner .gauge {
+          --color-gauge-background: #a21caf;
+        }
+
+        .light #component-dashboardshremployeesdashboardcomponentgender-inner .gauge {
+          --color-gauge-background: #a21caf;
+        }
+
+        .dark #component-dashboardshremployeesdashboardcomponentgender-inner .gauge {
+          --color-gauge-background: #d946ef;
+        }
+
+        @media (prefers-color-scheme: light) {
+          #component-dashboardshremployeesdashboardcomponentgender-inner .gauge {
+            --color-gauge-background: #a21caf;
+          }
+        }
+
+        @media (prefers-color-scheme: dark) {
+          #component-dashboardshremployeesdashboardcomponentgender-inner .gauge {
+            --color-gauge-background: #d946ef;
+          }
+        }
+    </style>
+{% endblock %}
+
+{% block dashboards_js %}
+    {{ block.super }}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const showButton = document.getElementById("show-code-button")
+            const closeButton = document.getElementById("close-code-button")
+            const modal = document.getElementById("code-modal")
+
+            showButton.addEventListener("click", () => {
+                modal.showModal()
+            })
+
+            closeButton.addEventListener("click", () => {
+                modal.close()
+            })
+
+            function isOutsideDialog(event) {
+                const rect = modal.getBoundingClientRect();
+                return (
+                    event.clientX < rect.left ||
+                    event.clientX > rect.right ||
+                    event.clientY < rect.top ||
+                    event.clientY > rect.bottom
+                );
+            }
+
+            addEventListener("pointerdown", function (event) {
+                if (event.target !== modal) {
+                    return;
+                }
+                if (isOutsideDialog(event)) {
+                    addEventListener("pointerup", function (event) {
+                        if (isOutsideDialog(event)) {
+                            modal.close()
+                        }
+                    }, { once: true });
+                }
+            });
+        })
+    </script>
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+    <button id="show-code-button" class="btn cta" title="{% translate "show code" %}">&lt;/&gt;</button>
+    <dialog id="code-modal">
+        <button id="close-code-button">×</button>
+        <div class="code-wrapper">
+            {{ dashboard|code_for_dashboard|highlight }}
+            <div class="button-wrapper">
+                <button
+                    class="copy-code-button btn cta alt"
+                    onclick="navigator.clipboard.writeText('{{ dashboard|code_for_dashboard|copyable }}')"
+                    title="{% translate "copy code" %}"
+                >
+                    🗐
+                </button>
+            </div>
+        </div>
+    </dialog>
+{% endblock %}

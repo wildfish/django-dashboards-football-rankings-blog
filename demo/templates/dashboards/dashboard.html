@@ -1,0 +1,43 @@
+{% extends "dashboards/dashboard.html" %}
+{% load static %}
+{% load dashboards %}
+{% load i18n %}
+
+{% block dashboards_style %}
+    {{ block.super }}
+    {# Not recommended this is inline, build your css files as normal, for demo purposes...  #}
+    <style>
+        table tr td a {
+            color: #1d8efb;
+        }
+
+        .match-form{
+          display: flex;
+        }
+
+        .match-form div{
+            height: 100px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            margin: 0.5em;
+            padding: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .form-w{
+            color: #000;
+            background-color: #00A000;
+        }
+        .form-l{
+            color: #FFF;
+            background-color: #f10b0b;
+        }
+        .form-d{
+            color: #000;
+            background-color: #aaaaaa;
+        }
+    </style>
+{% endblock %}
+

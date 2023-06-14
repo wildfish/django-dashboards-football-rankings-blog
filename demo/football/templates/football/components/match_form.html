@@ -1,0 +1,5 @@
+<div class="match-form">
+{% for v in rendered_value %}
+    <div class="form-{{ v.result }}" data-tip="{{ v }}">{{ v }}</div>
+{% endfor %}
+</div>
